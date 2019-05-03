@@ -130,14 +130,14 @@ def get_message_id(parsed_message,
     try:
         if options_use_checksum:
             md5 = hashlib.md5()
-            md5.update("From:"    + utf8_header(parsed_message,'From'))
-            md5.update("To:"      + utf8_header(parsed_message,'To'))
-            md5.update("Subject:" + utf8_header(parsed_message,'Subject'))
-            md5.update("Date:"    + utf8_header(parsed_message,'Date'))
-            md5.update("Cc:"      + utf8_header(parsed_message,'Cc'))
-            md5.update("Bcc:"     + utf8_header(parsed_message,'Bcc'))
+            md5.update(b"From:"    + utf8_header(parsed_message,'From'))
+            md5.update(b"To:"      + utf8_header(parsed_message,'To'))
+            md5.update(b"Subject:" + utf8_header(parsed_message,'Subject'))
+            md5.update(b"Date:"    + utf8_header(parsed_message,'Date'))
+            md5.update(b"Cc:"      + utf8_header(parsed_message,'Cc'))
+            md5.update(b"Bcc:"     + utf8_header(parsed_message,'Bcc'))
             if options_use_id_in_checksum:
-                md5.update("Message-ID:" + utf8_header(parsed_message,'Message-ID'))
+                md5.update(b"Message-ID:" + utf8_header(parsed_message,'Message-ID'))
             msg_id = md5.hexdigest()
             # print(msg_id)
         else:
@@ -159,13 +159,13 @@ def get_message_id(parsed_message,
 
 
 def print_message_info(parsed_message):
-    print("From: " +    utf8_header(parsed_message,'From'))
-    print("To: " +      utf8_header(parsed_message,'To'))
-    print("Cc: " +      utf8_header(parsed_message,'Cc'))
-    print("Bcc: " +     utf8_header(parsed_message,'Bcc'))
-    print("Subject: " + utf8_header(parsed_message,'Subject'))
-    print("Date: " +    utf8_header(parsed_message,'Date'))
-    print("")
+    print(b"From: " +    utf8_header(parsed_message,'From'))
+    print(b"To: " +      utf8_header(parsed_message,'To'))
+    print(b"Cc: " +      utf8_header(parsed_message,'Cc'))
+    print(b"Bcc: " +     utf8_header(parsed_message,'Bcc'))
+    print(b"Subject: " + utf8_header(parsed_message,'Subject'))
+    print(b"Date: " +    utf8_header(parsed_message,'Date'))
+    print(b"")
 
 
 # This actually does the work
@@ -235,7 +235,8 @@ def process(options, mboxes):
             print("%s message(s) currently marked as deleted in %s" % (numdeleted or "No", mbox))
 
             # ...and get a list of the ones that aren't deleted. That's what we'll use.
-            msgnums = check_response(server.search(None, 'UNDELETED'))[0].split()
+            msgnums_byte = check_response(server.search(None, 'UNDELETED'))[0].split()
+            msgnums = [x.decode() for x in msgnums_byte]
             print("%s others in %s" % (len(msgnums), mbox))
 
             chunkSize = 100
@@ -252,7 +253,7 @@ def process(options, mboxes):
                 # and parse them.
                 for ci in range(0, len(msgnums_in_chunk)):
                     mnum = msgnums_in_chunk[ci]
-                    mp = p.parsestr(ms[ci * 2][1])
+                    mp = p.parsestr(ms[ci * 2][1].decode())
                     if options.verbose:
                         print("Checking %s message %s" % (mbox, mnum))
 
@@ -322,4 +323,3 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
-
