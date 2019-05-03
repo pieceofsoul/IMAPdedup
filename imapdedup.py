@@ -236,7 +236,7 @@ def process(options, mboxes):
 
             # ...and get a list of the ones that aren't deleted. That's what we'll use.
             msgnums_byte = check_response(server.search(None, 'UNDELETED'))[0].split()
-            msgnums = [x.decode() for x in msgnums_byte]
+            msgnums = [x.decode('utf-8', 'ignore') for x in msgnums_byte]
             print("%s others in %s" % (len(msgnums), mbox))
 
             chunkSize = 100
@@ -253,7 +253,7 @@ def process(options, mboxes):
                 # and parse them.
                 for ci in range(0, len(msgnums_in_chunk)):
                     mnum = msgnums_in_chunk[ci]
-                    mp = p.parsestr(ms[ci * 2][1].decode())
+                    mp = p.parsestr(ms[ci * 2][1].decode('utf-8', 'ignore'))
                     if options.verbose:
                         print("Checking %s message %s" % (mbox, mnum))
 
